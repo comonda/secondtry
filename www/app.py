@@ -15,12 +15,12 @@ from datetime import datetime
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
-import www.orm as orm
-from www.coroweb import add_routes, add_static
+import orm
+from coroweb import add_routes, add_static
 
-from www.config import configs
+from config import configs
 
-from  www.handlers import cookie2user, COOKIE_NAME
+from handlers import cookie2user, COOKIE_NAME
 
 def init_jinja2(app, **kw):
     logging.info('init jinja2...')
@@ -61,11 +61,11 @@ async def auth_factory(app, handler):
                 logging.info('set current user: %s' % user.email)
                 request.__user__ = user
         if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
+            logging.info('123123')
             return web.HTTPFound('/signin')
+        logging.info('456456')
         return (await handler(request))
     return auth
-
-
 
 async def data_factory(app, handler):
     async def parse_data(request):
@@ -102,6 +102,7 @@ async def response_factory(app, handler):
                 resp.content_type = 'application/json;charset=utf-8'
                 return resp
             else:
+                r['__user__'] = request.__user__
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp

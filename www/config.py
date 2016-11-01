@@ -7,7 +7,7 @@ Configuration
 
 __author__ = 'comon'
 
-import www.config_default as config_default
+import config_default as config_default
 
 class Dict(dict):
     '''
